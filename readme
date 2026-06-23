@@ -1,0 +1,178 @@
+# README – Firewall Connectivity Test Tool
+
+Outil de test de connectivité réseau point à point à travers un firewall.  
+Il valide les flux TCP, UDP et ICMP entre deux postes, sans nécessiter de serveur dédié.
+
+---
+
+## 📦 Fonctionnalités
+
+- **Mode Listener** : écoute simultanément sur tous les ports TCP/UDP configurés et répond automatiquement aux requêtes.
+- **Mode Test** : envoie des requêtes vers la cible pour chaque port (TCP, UDP) et effectue un ping ICMP.
+- **Multithreading** : accélère les tests et permet une écoute simultanée.
+- **Rapports** : génère un fichier CSV et un rapport HTML moderne avec statistiques et liste des flux bloqués.
+- **Journalisation** : logs détaillés dans `logs/firewall_test.log`.
+- **Aucune dépendance externe** : utilise uniquement la bibliothèque standard Python.
+
+---
+
+## 📋 Prérequis
+
+- Python 3.10 ou supérieur
+- Système : Windows, Linux ou macOS
+
+---
+
+## 🚀 Installation
+
+Clonez ou copiez les fichiers suivants dans un même répertoire :
+
+```
+firewall_test.py
+listener.py
+tester.py
+reporter.py
+utils.py
+config.py
+```
+
+Aucune installation supplémentaire n'est requise.
+
+---
+
+## ⚙️ Configuration
+
+Les paramètres sont modifiables dans `config.py` :
+
+- `TCP_PORTS` : liste des ports TCP à tester.
+- `UDP_PORTS` : liste des ports UDP à tester.
+- `DEFAULT_TIMEOUT` : temps d'attente par défaut (secondes).
+- `REQUEST_MESSAGE` / `RESPONSE_MESSAGE` : messages échangés.
+
+---
+
+## ▶️ Utilisation
+
+### Mode Listener (poste récepteur)
+
+```bash
+python firewall_test.py --listen
+```
+
+- Écoute sur tous les ports définis.
+- Répond `OK` à toute requête `PING`.
+- Appuyez sur `Ctrl+C` pour arrêter.
+
+### Mode Test (poste initiateur)
+
+```bash
+python firewall_test.py --target <IP_DESTINATION>
+```
+
+Exemple :
+
+```bash
+python firewall_test.py --target 10.10.10.20
+```
+
+#### Options supplémentaires
+
+| Option | Description |
+|--------|-------------|
+| `--timeout <secondes>` | Modifie le timeout (défaut : 3.0 s). |
+| `--output-dir <dossier>` | Répertoire de sortie des rapports (défaut : `reports/`). |
+
+Exemple complet :
+
+```bash
+python firewall_test.py --target 192.168.1.100 --timeout 5 --output-dir ./resultats
+```
+
+---
+
+## 📊 Résultats
+
+### Affichage console
+
+Chaque test est affiché avec son statut (`PASS`, `FAIL`, `TIMEOUT`, `ERROR`), suivi d’un résumé et de la liste des flux bloqués.
+
+### Rapports générés
+
+- **CSV** : `firewall_test_YYYYMMDD_HHMMSS.csv` (colonnes : `Protocol`, `Port`, `Status`)
+- **HTML** : `firewall_test_YYYYMMDD_HHMMSS.html` (tableau complet, statistiques, flux bloqués)
+
+Les rapports sont sauvegardés dans le dossier spécifié (par défaut `reports/`).
+
+---
+
+## 🗂️ Arborescence du projet
+
+```
+firewall_test/
+├── firewall_test.py          # Point d'entrée
+├── listener.py               # Module Listener
+├── tester.py                 # Module Tester
+├── reporter.py               # Module Reporter
+├── utils.py                  # Utilitaires (IP, ping)
+├── config.py                 # Configuration
+├── logs/                     # Journaux (créé automatiquement)
+└── reports/                  # Rapports (créé automatiquement)
+```
+
+---
+
+## 📝 Exemple de rapport HTML
+
+Le rapport HTML inclut :
+
+- Date et heure du test
+- Adresses IP source et destination
+- Résumé visuel (total, PASS, FAIL, TIMEOUT, ERROR)
+- Tableau détaillé
+- Liste des flux bloqués
+
+---
+
+## 🔧 Personnalisation
+
+- Ajouter/retirer des ports : modifiez les listes dans `config.py`.
+- Changer le message de requête/réponse : éditez `REQUEST_MESSAGE` / `RESPONSE_MESSAGE`.
+- Ajuster le parallélisme : dans `tester.py`, modifiez `max_workers` (défaut : 20).
+
+---
+
+## 🧪 Recommandations pour une recette firewall
+
+1. **Planifiez** la matrice des flux attendus.
+2. **Démarrez le listener** sur la machine cible.
+3. **Exécutez le test** depuis la machine source.
+4. **Analysez** les rapports et identifiez les flux bloqués.
+5. **Ajustez** les règles du firewall et **rejouez** les tests.
+6. **Validez** et documentez avec les rapports finaux.
+
+---
+
+## 🐛 Dépannage
+
+| Problème | Solution |
+|----------|----------|
+| `Address already in use` | Un autre processus utilise le port. Arrêtez le listener précédent. |
+| Tous les tests échouent | Vérifiez l'adresse IP, le routage et que le listener est bien démarré. |
+| Aucun rapport généré | Vérifiez les droits en écriture dans le dossier de sortie. |
+| Le ping ne fonctionne pas | Assurez-vous que ICMP est autorisé et que la commande `ping` est disponible. |
+
+---
+
+## 📄 Licence
+
+Ce logiciel est fourni "en l'état", sans garantie. Libre d'utilisation à des fins professionnelles.
+
+---
+
+## 🤝 Contribution
+
+Les suggestions d'amélioration sont les bienvenues. N'hésitez pas à ouvrir une issue ou une pull request.
+
+---
+
+**Version 1.0 – Juin 2026**
